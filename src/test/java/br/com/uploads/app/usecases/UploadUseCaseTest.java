@@ -1,5 +1,6 @@
 package br.com.uploads.app.usecases;
 
+import br.com.uploads.app.ports.UploadQueue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ class UploadUseCaseTest {
   @Mock
   private BucketUseCase bucketUseCase;
   @Mock
-  private QueueUseCase queueUseCase;
+  private UploadQueue uploadQueue;
   @Mock
   private FilePart filePart1;
   @Mock
@@ -51,7 +52,7 @@ class UploadUseCaseTest {
     when(filePart2.filename()).thenReturn("file2.txt");
     when(bucketUseCase.uploadFile(filePart1)).thenReturn(Mono.just(filePart1));
     when(bucketUseCase.uploadFile(filePart2)).thenReturn(Mono.just(filePart2));
-    when(queueUseCase.sendMessage(any())).thenReturn(Mono.just(createSendMessageResponse()));
+    when(uploadQueue.sendMessage(any())).thenReturn(Mono.just(createSendMessageResponse()));
 
     Flux<FilePart> files = Flux.just(filePart1, filePart2);
     Context context = Context.of(EMAIL_CONTEXT_KEY, "test@email.com");
@@ -62,7 +63,7 @@ class UploadUseCaseTest {
       .verifyComplete();
     verify(bucketUseCase, times(1)).uploadFile(filePart1);
     verify(bucketUseCase, times(1)).uploadFile(filePart2);
-    verify(queueUseCase, times(1)).sendMessage(any());
+    verify(uploadQueue, times(1)).sendMessage(any());
   }
 
   @Test
@@ -71,7 +72,7 @@ class UploadUseCaseTest {
     when(filePart2.filename()).thenReturn("file2.txt");
     when(bucketUseCase.uploadFile(filePart1)).thenReturn(Mono.error(new RuntimeException("fail")));
     when(bucketUseCase.uploadFile(filePart2)).thenReturn(Mono.just(filePart2));
-    when(queueUseCase.sendMessage(any())).thenReturn(Mono.just(createSendMessageResponse()));
+    when(uploadQueue.sendMessage(any())).thenReturn(Mono.just(createSendMessageResponse()));
 
     Flux<FilePart> files = Flux.just(filePart1, filePart2);
     Context context = Context.of(EMAIL_CONTEXT_KEY, "test@email.com");
@@ -83,12 +84,12 @@ class UploadUseCaseTest {
 
     verify(bucketUseCase, times(1)).uploadFile(filePart1);
     verify(bucketUseCase, times(1)).uploadFile(filePart2);
-    verify(queueUseCase, times(1)).sendMessage(any());
+    verify(uploadQueue, times(1)).sendMessage(any());
   }
 
   @Test
   void uploadFiles_shouldSendQueueMessageWithEmptyListIfNoFiles() {
-    when(queueUseCase.sendMessage(any())).thenReturn(Mono.just(createSendMessageResponse()));
+    when(uploadQueue.sendMessage(any())).thenReturn(Mono.just(createSendMessageResponse()));
     Flux<FilePart> files = Flux.empty();
     Context context = Context.of(EMAIL_CONTEXT_KEY, "test@email.com");
 
@@ -98,7 +99,7 @@ class UploadUseCaseTest {
       .verifyComplete();
 
     verify(bucketUseCase, times(0)).uploadFile(any());
-    verify(queueUseCase, times(1)).sendMessage(any());
+    verify(uploadQueue, times(1)).sendMessage(any());
   }
 
   private SendMessageResponse createSendMessageResponse() {

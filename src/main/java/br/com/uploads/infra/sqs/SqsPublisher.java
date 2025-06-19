@@ -1,5 +1,6 @@
-package br.com.uploads.app.usecases;
+package br.com.uploads.infra.sqs;
 
+import br.com.uploads.app.ports.UploadQueue;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,13 +15,14 @@ import static br.com.uploads.webui.constants.Constants.EMAIL_CONTEXT_KEY;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class QueueUseCase {
+public class SqsPublisher implements UploadQueue {
 
   private final SqsClient sqsClient;
 
   @Value("${aws.sqs.endpoint}")
   private String queueUrl;
 
+  @Override
   public Mono<SendMessageResponse> sendMessage(String body) {
     return Mono.deferContextual(ctx -> {
       var email = ctx.get(EMAIL_CONTEXT_KEY);
@@ -38,4 +40,5 @@ public class QueueUseCase {
       .messageBody(body)
       .build();
   }
+
 }

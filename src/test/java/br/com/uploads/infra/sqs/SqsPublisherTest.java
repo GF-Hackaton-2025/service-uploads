@@ -1,4 +1,4 @@
-package br.com.uploads.app.usecases;
+package br.com.uploads.infra.sqs;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,13 +19,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
-class QueueUseCaseTest {
+class SqsPublisherTest {
 
   @Mock
   private SqsClient sqsClient;
 
   @InjectMocks
-  private QueueUseCase queueUseCase;
+  private SqsPublisher sqsPublisher;
 
   private AutoCloseable closeable;
 
@@ -45,7 +45,7 @@ class QueueUseCaseTest {
     when(sqsClient.sendMessage(any(SendMessageRequest.class))).thenReturn(response);
 
     var context = reactor.util.context.Context.of(EMAIL_CONTEXT_KEY, "test@email.com");
-    Mono<SendMessageResponse> result = queueUseCase.sendMessage("body").contextWrite(context);
+    Mono<SendMessageResponse> result = sqsPublisher.sendMessage("body").contextWrite(context);
 
     SendMessageResponse actual = result.block();
     assertNotNull(actual);
@@ -53,5 +53,5 @@ class QueueUseCaseTest {
 
     verify(sqsClient, times(1)).sendMessage(any(SendMessageRequest.class));
   }
-}
 
+}

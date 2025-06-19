@@ -1,5 +1,6 @@
 package br.com.uploads.app.usecases;
 
+import br.com.uploads.app.ports.UploadQueue;
 import br.com.uploads.app.usecases.models.FileUploadMessage;
 import br.com.uploads.app.usecases.models.UploadQueueMessage;
 import br.com.uploads.enums.UploadFileStatus;
@@ -19,7 +20,7 @@ import static br.com.uploads.webui.constants.Constants.EMAIL_CONTEXT_KEY;
 public class UploadUseCase {
 
   private final BucketUseCase bucketUseCase;
-  private final QueueUseCase queueUseCase;
+  private final UploadQueue messageQueue;
 
   public Mono<Void> uploadFiles(Flux<FilePart> files) {
     return Mono.deferContextual(ctx -> {
@@ -31,7 +32,7 @@ public class UploadUseCase {
           .flatMap(f -> updateUploadQueueMessage(message, file, UPLOAD_SUCCESS))
           .onErrorResume(error -> updateUploadQueueMessage(message, file, UPLOAD_FAILURE)))
         .collectList()
-        .flatMap(updatedMessage -> queueUseCase.sendMessage(toJson(updatedMessage)))
+        .flatMap(updatedMessage -> messageQueue.sendMessage(toJson(updatedMessage)))
         .then();
     });
   }
