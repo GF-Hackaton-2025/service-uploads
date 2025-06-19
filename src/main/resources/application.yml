@@ -1,0 +1,11 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: service-uploads
+
+aws:
+  region: us-east-1
+  sqs:
+    endpoint: ${AWS_SQS_ENDPOINT:https://sqs.us-east-1.amazonaws.com/828818793977/uploads-events}
