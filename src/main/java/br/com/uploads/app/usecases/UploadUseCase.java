@@ -31,9 +31,7 @@ public class UploadUseCase {
       return files.flatMap(file -> bucketUseCase.uploadFile(file)
           .flatMap(f -> updateUploadQueueMessage(message, file, UPLOAD_SUCCESS))
           .onErrorResume(error -> updateUploadQueueMessage(message, file, UPLOAD_FAILURE)))
-        .collectList()
-        .flatMap(updatedMessage -> messageQueue.sendMessage(toJson(updatedMessage)))
-        .then();
+        .then(Mono.defer(() -> messageQueue.sendMessage(toJson(message)).then()));
     });
   }
 
