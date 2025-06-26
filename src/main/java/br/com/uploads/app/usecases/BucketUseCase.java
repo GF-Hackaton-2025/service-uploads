@@ -1,5 +1,6 @@
 package br.com.uploads.app.usecases;
 
+import br.com.uploads.app.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class BucketUseCase {
             outputStream.write(bytes);
             return outputStream.toByteArray();
           } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new BusinessException(e.getMessage());
           }
         })
         .reduce((a, b) -> {
