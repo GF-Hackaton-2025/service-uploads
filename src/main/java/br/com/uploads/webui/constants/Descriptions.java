@@ -2,6 +2,9 @@ package br.com.uploads.webui.constants;
 
 public class Descriptions {
 
+  public static final String EMAIL = "Email of the user";
+  public static final String FILES = "List of files to be uploaded";
+
   // Error Response Class
   public static final String HTTP_CODE = "HTTP status code of the error";
   public static final String HTTP_DESCRIPTION = "Description of the HTTP error";
