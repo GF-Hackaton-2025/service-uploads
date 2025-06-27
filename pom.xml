@@ -25,7 +25,8 @@
             **/ServiceUploadsApplication.java
         </sonar.exclusions>
         <sonar.coverage.exclusions>
-            **/app/exception/*.java
+            **/app/exception/*.java,
+            **/webui/domain/response/*.java
         </sonar.coverage.exclusions>
     </properties>
 
