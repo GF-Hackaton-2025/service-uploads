@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-uploads-app
+  labels:
+    app: service-uploads-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-uploads-app
+  template:
+    metadata:
+      labels:
+        app: service-uploads-app
+    spec:
+      containers:
+        - name: app
+          image: 828818793977.dkr.ecr.us-east-1.amazonaws.com/service-uploads:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: "500m"
+            limits:
+              cpu: "1000m"
