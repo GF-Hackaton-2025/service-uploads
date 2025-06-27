@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.codec.multipart.FilePart;
@@ -23,8 +22,6 @@ import java.nio.charset.StandardCharsets;
 
 import static br.com.uploads.webui.constants.Constants.EMAIL_CONTEXT_KEY;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -95,9 +92,7 @@ class BucketUseCaseTest {
     when(filePart.content()).thenReturn(Flux.just(dataBuffer));
     when(filePart.filename()).thenReturn("file.txt");
     when(filePart.headers()).thenReturn(new HttpHeaders());
-    DataBuffer spyBuffer = spy(dataBuffer);
-    doThrow(new RuntimeException(new IOException("IO error"))).when(spyBuffer).asByteBuffer();
-    when(filePart.content()).thenReturn(Flux.just(spyBuffer));
+    when(filePart.content()).thenReturn(Flux.error(new RuntimeException(new IOException("IO error"))));
 
     var context = Context.of(EMAIL_CONTEXT_KEY, "test@email.com");
     Mono<FilePart> result = bucketUseCase.uploadFile(filePart).contextWrite(context);

@@ -13,7 +13,6 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import static br.com.uploads.webui.constants.Constants.EMAIL_CONTEXT_KEY;
 import static br.com.uploads.webui.constants.Constants.UPLOADS_BUCKET_NAME;
@@ -33,9 +32,8 @@ public class BucketUseCase {
         .map(dataBuffer -> {
           ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
           try {
-            ByteBuffer byteBuffer = dataBuffer.asByteBuffer();
-            byte[] bytes = new byte[byteBuffer.remaining()];
-            byteBuffer.get(bytes);
+            byte[] bytes = new byte[dataBuffer.readableByteCount()];
+            dataBuffer.read(bytes);
             outputStream.write(bytes);
             return outputStream.toByteArray();
           } catch (IOException e) {

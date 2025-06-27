@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static br.com.uploads.webui.constants.Constants.YYYY_MM_DD_HH_MM_SS_SSS;
+import static br.com.uploads.webui.constants.Errors.ERROR_MESSAGE;
+import static br.com.uploads.webui.constants.Errors.VALIDATION_FIELD_ERROR;
 
 @Component
 @Order(-2)
@@ -38,33 +40,24 @@ public class ExceptionAdvice implements WebExceptionHandler {
 
   @Override
   public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
-    if (exchange.getResponse().isCommitted()) {
+    if (exchange.getResponse().isCommitted())
       return Mono.error(ex);
-    }
 
-    if (ex instanceof BusinessException e) {
-      return writeErrorResponse(exchange, e.getStatus(), e.getMessage());
-    } else if (ex instanceof BadRequestException e) {
-      return writeErrorResponse(exchange, e.getStatus(), e.getMessage());
-    } else if (ex instanceof ForbiddenException e) {
-      return writeErrorResponse(exchange, e.getStatus(), e.getMessage());
-    } else if (ex instanceof UnauthorizedException e) {
-      return writeErrorResponse(exchange, e.getStatus(), e.getMessage());
-    } else if (ex instanceof WebExchangeBindException e) {
-      return handleValidationException(exchange, e);
-    } else if (ex instanceof ConstraintViolationException e) {
-      return handleConstraintViolationException(exchange, e);
-    } else if (ex instanceof MethodArgumentNotValidException e) {
-      return handleMethodArgumentNotValidException(exchange, e);
-    } else if (ex instanceof MissingRequestValueException e) {
-      return handleMissingRequestValueException(exchange, e);
-    } else {
-      return writeErrorResponse(exchange, HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
-    }
+    return switch (ex) {
+      case BusinessException e -> writeErrorResponse(exchange, e.getStatus(), e.getMessage());
+      case BadRequestException e -> writeErrorResponse(exchange, e.getStatus(), e.getMessage());
+      case ForbiddenException e -> writeErrorResponse(exchange, e.getStatus(), e.getMessage());
+      case UnauthorizedException e -> writeErrorResponse(exchange, e.getStatus(), e.getMessage());
+      case WebExchangeBindException e -> handleValidationException(exchange, e);
+      case ConstraintViolationException e -> handleConstraintViolationException(exchange, e);
+      case MethodArgumentNotValidException e -> handleMethodArgumentNotValidException(exchange, e);
+      case MissingRequestValueException e -> handleMissingRequestValueException(exchange, e);
+      default -> writeErrorResponse(exchange, HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+    };
   }
 
   private Mono<Void> handleValidationException(ServerWebExchange request, WebExchangeBindException ex) {
-    log.error("Error", ex);
+    log.error(ERROR_MESSAGE, ex);
 
     List<ErrorField> errorList = new ArrayList<>();
     ex.getBindingResult().getFieldErrors().forEach(e -> {
@@ -78,7 +71,7 @@ public class ExceptionAdvice implements WebExceptionHandler {
     var errorResponse = ErrorResponse.builder()
       .path(request.getRequest().getPath().value())
       .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")))
-      .message("Validation field with error")
+      .message(VALIDATION_FIELD_ERROR)
       .httpCode(HttpStatus.BAD_REQUEST.value())
       .httpDescription(HttpStatus.BAD_REQUEST.getReasonPhrase())
       .errors(!errorList.isEmpty() ? errorList : null)
@@ -88,7 +81,7 @@ public class ExceptionAdvice implements WebExceptionHandler {
   }
 
   private Mono<Void> handleMethodArgumentNotValidException(ServerWebExchange request, MethodArgumentNotValidException ex) {
-    log.error("Error", ex);
+    log.error(ERROR_MESSAGE, ex);
 
     List<ErrorField> errorList = new ArrayList<>();
     ex.getBindingResult().getFieldErrors().forEach(e -> {
@@ -102,7 +95,7 @@ public class ExceptionAdvice implements WebExceptionHandler {
     var errorResponse = ErrorResponse.builder()
       .path(request.getRequest().getPath().value())
       .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS_SSS)))
-      .message("Validation field with error")
+      .message(VALIDATION_FIELD_ERROR)
       .httpCode(HttpStatus.BAD_REQUEST.value())
       .httpDescription(HttpStatus.BAD_GATEWAY.getReasonPhrase())
       .errors(!errorList.isEmpty() ? errorList : null)
@@ -112,7 +105,7 @@ public class ExceptionAdvice implements WebExceptionHandler {
   }
 
   private Mono<Void> handleMissingRequestValueException(ServerWebExchange request, MissingRequestValueException ex) {
-    log.error("Error", ex);
+    log.error(ERROR_MESSAGE, ex);
 
     List<ErrorField> errorList = new ArrayList<>();
 
@@ -125,17 +118,17 @@ public class ExceptionAdvice implements WebExceptionHandler {
     var errorResponse = ErrorResponse.builder()
       .path(request.getRequest().getPath().value())
       .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS_SSS)))
-      .message("Validation field with error")
+      .message(VALIDATION_FIELD_ERROR)
       .httpCode(HttpStatus.BAD_REQUEST.value())
       .httpDescription(HttpStatus.BAD_GATEWAY.getReasonPhrase())
-      .errors(!errorList.isEmpty() ? errorList : null)
+      .errors(errorList)
       .build();
 
     return writeJson(request, HttpStatus.BAD_REQUEST, errorResponse);
   }
 
   private Mono<Void> handleConstraintViolationException(ServerWebExchange request, ConstraintViolationException ex) {
-    log.error("Error", ex);
+    log.error(ERROR_MESSAGE, ex);
 
     List<ErrorField> errorList = new ArrayList<>();
     ex.getConstraintViolations().forEach(e -> {

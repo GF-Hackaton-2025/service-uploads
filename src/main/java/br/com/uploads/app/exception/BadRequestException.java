@@ -12,23 +12,4 @@ public class BadRequestException extends RuntimeException {
     this.status = status;
   }
 
-  public BadRequestException(String message, HttpStatus status) {
-    super(message);
-    this.status = status;
-  }
-
-  public BadRequestException(String message, Throwable cause, HttpStatus status) {
-    super(message, cause);
-    this.status = status;
-  }
-
-  public BadRequestException(Throwable cause, HttpStatus status) {
-    super(cause);
-    this.status = status;
-  }
-
-  public BadRequestException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace, HttpStatus status) {
-    super(message, cause, enableSuppression, writableStackTrace);
-    this.status = status;
-  }
 }
