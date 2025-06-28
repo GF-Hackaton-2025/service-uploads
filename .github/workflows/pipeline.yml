@@ -38,7 +38,6 @@ jobs:
             -Dsonar.organization=${{ env.SONAR_ORGANIZATION }} \
             -Dsonar.branch.name=main \
             -Dsonar.host.url=${{ env.SONAR_HOST_URL }} \
-            -Dsonar.login=$SONAR_TOKEN
 
       - name: Build application
         run: |
