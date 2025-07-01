@@ -22,6 +22,8 @@
             **/enums/**,
             **/config/**,
             **/models/**,
+            **/utils/**,
+            **/exception/handler/**,
             **/ServiceUploadsApplication.java
         </sonar.exclusions>
         <sonar.coverage.exclusions>

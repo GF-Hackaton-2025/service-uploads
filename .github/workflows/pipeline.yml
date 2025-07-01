@@ -10,8 +10,8 @@ env:
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
   IMAGE_TAG: latest
   SONAR_HOST_URL: https://sonarcloud.io
-  SONAR_PROJECT_KEY: service-uploads
-  SONAR_ORGANIZATION: gf-hackaton-2025
+  SONAR_PROJECT_KEY: gf-hackaton-2025-1_service-uploads
+  SONAR_ORGANIZATION: gf-hackaton-2025-1
 
 jobs:
   sonar:
@@ -38,6 +38,7 @@ jobs:
             -Dsonar.organization=${{ env.SONAR_ORGANIZATION }} \
             -Dsonar.branch.name=main \
             -Dsonar.host.url=${{ env.SONAR_HOST_URL }} \
+            -Dsonar.login=$SONAR_TOKEN
 
       - name: Build application
         run: |
