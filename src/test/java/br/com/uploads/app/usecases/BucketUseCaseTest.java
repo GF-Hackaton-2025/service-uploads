@@ -12,13 +12,18 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import reactor.util.context.Context;
+import software.amazon.awssdk.core.async.AsyncResponseTransformer;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 
 import static br.com.uploads.webui.constants.Constants.EMAIL_CONTEXT_KEY;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,6 +36,9 @@ class BucketUseCaseTest {
 
   @Mock
   private S3Client s3Client;
+
+  @Mock
+  private S3AsyncClient s3AsyncClient;
 
   @Mock
   private FilePart filePart;
@@ -151,5 +159,31 @@ class BucketUseCaseTest {
       .verify();
 
     verify(s3Client, times(0)).putObject((PutObjectRequest) any(), (RequestBody) any());
+  }
+
+  @Test
+  void getFile_shouldReturnPathOnSuccess() {
+    Path destinationPath = Path.of("test/path/file.txt");
+    when(s3AsyncClient.getObject(any(GetObjectRequest.class), any(AsyncResponseTransformer.class)))
+      .thenReturn(CompletableFuture.completedFuture(null));
+
+    Mono<Path> result = bucketUseCase.getFile("bucket", "key", destinationPath);
+
+    StepVerifier.create(result)
+      .expectNext(destinationPath)
+      .verifyComplete();
+  }
+
+  @Test
+  void getFile_shouldHandleErrorFromS3() {
+    Path destinationPath = Path.of("test/path/file.txt");
+    when(s3AsyncClient.getObject(any(GetObjectRequest.class), any(AsyncResponseTransformer.class)))
+      .thenReturn(CompletableFuture.failedFuture(new RuntimeException("S3 failure")));
+
+    Mono<Path> result = bucketUseCase.getFile("bucket", "key", destinationPath);
+
+    StepVerifier.create(result)
+      .expectErrorMatches(e -> e instanceof RuntimeException && e.getMessage().equals("S3 failure"))
+      .verify();
   }
 }
