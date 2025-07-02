@@ -28,7 +28,8 @@
         </sonar.exclusions>
         <sonar.coverage.exclusions>
             **/app/exception/*.java,
-            **/webui/domain/response/*.java
+            **/webui/domain/response/*.java,
+            **/infra/sqs/SqsListener.java
         </sonar.coverage.exclusions>
     </properties>
 

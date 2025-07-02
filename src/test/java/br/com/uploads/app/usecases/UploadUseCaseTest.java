@@ -1,6 +1,7 @@
 package br.com.uploads.app.usecases;
 
 import br.com.uploads.app.ports.UploadQueue;
+import br.com.uploads.app.repositories.FilesRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,10 @@ class UploadUseCaseTest {
   private FilePart filePart1;
   @Mock
   private FilePart filePart2;
+  @Mock
+  private FilesRepository filesRepository;
+  @Mock
+  private EmailUseCase emailUseCase;
 
   @InjectMocks
   private UploadUseCase uploadUseCase;
@@ -53,6 +58,7 @@ class UploadUseCaseTest {
     when(bucketUseCase.uploadFile(filePart1)).thenReturn(Mono.just(filePart1));
     when(bucketUseCase.uploadFile(filePart2)).thenReturn(Mono.just(filePart2));
     when(uploadQueue.sendMessage(any())).thenReturn(Mono.just(createSendMessageResponse()));
+    when(filesRepository.save(any())).thenReturn(Mono.empty());
 
     Flux<FilePart> files = Flux.just(filePart1, filePart2);
     Context context = Context.of(EMAIL_CONTEXT_KEY, "test@email.com");
@@ -73,6 +79,8 @@ class UploadUseCaseTest {
     when(bucketUseCase.uploadFile(filePart1)).thenReturn(Mono.error(new RuntimeException("fail")));
     when(bucketUseCase.uploadFile(filePart2)).thenReturn(Mono.just(filePart2));
     when(uploadQueue.sendMessage(any())).thenReturn(Mono.just(createSendMessageResponse()));
+    when(filesRepository.save(any())).thenReturn(Mono.empty());
+    when(emailUseCase.sendEmail(any(), any(), any(), any())).thenReturn(Mono.empty());
 
     Flux<FilePart> files = Flux.just(filePart1, filePart2);
     Context context = Context.of(EMAIL_CONTEXT_KEY, "test@email.com");
@@ -88,8 +96,7 @@ class UploadUseCaseTest {
   }
 
   @Test
-  void uploadFiles_shouldSendQueueMessageWithEmptyListIfNoFiles() {
-    when(uploadQueue.sendMessage(any())).thenReturn(Mono.just(createSendMessageResponse()));
+  void uploadFiles_shouldNotSendQueueMessageIfNoFiles() {
     Flux<FilePart> files = Flux.empty();
     Context context = Context.of(EMAIL_CONTEXT_KEY, "test@email.com");
 
@@ -99,7 +106,9 @@ class UploadUseCaseTest {
       .verifyComplete();
 
     verify(bucketUseCase, times(0)).uploadFile(any());
-    verify(uploadQueue, times(1)).sendMessage(any());
+    verify(uploadQueue, times(0)).sendMessage(any());
+    verify(filesRepository, times(0)).save(any());
+    verify(emailUseCase, times(0)).sendEmail(any(), any(), any(), any());
   }
 
   private SendMessageResponse createSendMessageResponse() {
@@ -108,4 +117,3 @@ class UploadUseCaseTest {
       .build();
   }
 }
-
