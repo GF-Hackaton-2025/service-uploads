@@ -1,6 +1,6 @@
 package br.com.uploads.app.usecases.models;
 
-import br.com.uploads.enums.UploadFileStatus;
+import br.com.uploads.enums.FileStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,10 +10,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileUploadMessage {
+public class FileProcessorQueueMessage {
 
+  private String email;
   private String fileId;
   private String fileName;
-  private UploadFileStatus status;
+  private String zipFileName;
+  private FileStatusEnum status;
 
 }

@@ -15,4 +15,12 @@ public class JsonUtils {
       return null;
     }
   }
+
+  public static <T> T fromJson(String json, Class<T> clazz) {
+    try {
+      return new ObjectMapper().readValue(json, clazz);
+    } catch (Exception e) {
+      return null;
+    }
+  }
 }

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 import static br.com.uploads.enums.FileStatusEnum.FAILED;
 import static br.com.uploads.enums.FileStatusEnum.PROCESSING;
 import static br.com.uploads.enums.UploadFileStatus.UPLOAD_FAILURE;
@@ -38,6 +40,7 @@ public class UploadUseCase {
       return files.flatMap(file -> bucketUseCase.uploadFile(file)
           .flatMap(f -> updateUploadQueueMessage(message, file, UPLOAD_SUCCESS))
           .onErrorResume(error -> getFileUploadMessageError(file)
+            .flatMap(f -> updateUploadQueueMessage(message, file, UPLOAD_FAILURE))
             .flatMap(f -> this.sendEmailNotification(message.getEmail(), f)))
           .flatMap(f -> this.filesRepository.save(getFileEntity(message.getEmail(), f))))
         .then(Mono.defer(() -> Mono.just(message)
@@ -63,6 +66,7 @@ public class UploadUseCase {
 
   private Mono<FileUploadMessage> updateUploadQueueMessage(UploadQueueMessage message, FilePart files, UploadFileStatus status) {
     var file = FileUploadMessage.builder()
+      .fileId(UUID.randomUUID().toString())
       .fileName(files.filename())
       .status(status)
       .build();
@@ -74,6 +78,7 @@ public class UploadUseCase {
   private File getFileEntity(String email, FileUploadMessage file) {
     return File.builder()
       .email(email)
+      .fileId(file.getFileId())
       .fileName(file.getFileName())
       .status(UPLOAD_SUCCESS.equals(file.getStatus()) ? PROCESSING : FAILED)
       .build();

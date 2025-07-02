@@ -21,8 +21,10 @@ public class File {
   @Id
   private ObjectId id;
   private String email;
+  private String fileId;
   private String fileName;
   private FileStatusEnum status;
+  private String zipFileName;
 
   @Builder.Default
   private LocalDateTime uploadDate = LocalDateTime.now();
