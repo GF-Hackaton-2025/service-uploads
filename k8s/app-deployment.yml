@@ -24,3 +24,14 @@ spec:
               cpu: "500m"
             limits:
               cpu: "1000m"
+          env:
+            - name: MONGO_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: order-service-secrets
+                  key: MONGO_DB_USER
+            - name: MONGO_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: order-service-secrets
+                  key: MONGO_DB_PASSWORD
