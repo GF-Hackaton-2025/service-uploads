@@ -28,10 +28,10 @@ spec:
             - name: MONGO_DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: order-service-secrets
+                  name: service-uploads-secrets
                   key: MONGO_DB_USER
             - name: MONGO_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: order-service-secrets
+                  name: service-uploads-secrets
                   key: MONGO_DB_PASSWORD
