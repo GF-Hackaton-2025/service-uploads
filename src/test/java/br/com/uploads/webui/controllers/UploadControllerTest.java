@@ -1,6 +1,7 @@
 package br.com.uploads.webui.controllers;
 
 import br.com.uploads.app.usecases.UploadUseCase;
+import br.com.uploads.webui.domain.response.UploadFilesResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.codec.multipart.FilePart;
@@ -36,7 +37,7 @@ class UploadControllerTest {
     when(uploadUseCase.uploadFiles(any()))
       .thenReturn(Mono.empty());
 
-    Mono<Void> result = uploadController.uploadFiles(EMAIL, files);
+    Mono<UploadFilesResponse> result = uploadController.uploadFiles(EMAIL, files);
 
     StepVerifier.create(result)
       .verifyComplete();
@@ -51,7 +52,7 @@ class UploadControllerTest {
     when(uploadUseCase.uploadFiles(any()))
       .thenReturn(Mono.empty());
 
-    Mono<Void> result = uploadController.uploadFiles(EMAIL, files);
+    Mono<UploadFilesResponse> result = uploadController.uploadFiles(EMAIL, files);
 
     StepVerifier.create(result)
       .verifyComplete();

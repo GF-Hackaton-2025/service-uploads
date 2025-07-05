@@ -2,6 +2,7 @@ package br.com.uploads.app.usecases;
 
 import br.com.uploads.app.ports.UploadQueue;
 import br.com.uploads.app.repositories.FilesRepository;
+import br.com.uploads.app.usecases.models.UploadQueueMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,8 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import reactor.util.context.Context;
 import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
+
+import java.util.Objects;
 
 import static br.com.uploads.webui.constants.Constants.EMAIL_CONTEXT_KEY;
 import static org.mockito.ArgumentMatchers.any;
@@ -63,9 +66,10 @@ class UploadUseCaseTest {
     Flux<FilePart> files = Flux.just(filePart1, filePart2);
     Context context = Context.of(EMAIL_CONTEXT_KEY, "test@email.com");
 
-    Mono<Void> result = uploadUseCase.uploadFiles(files).contextWrite(context);
+    Mono<UploadQueueMessage> result = uploadUseCase.uploadFiles(files).contextWrite(context);
 
     StepVerifier.create(result)
+      .expectNextMatches(Objects::nonNull)
       .verifyComplete();
     verify(bucketUseCase, times(1)).uploadFile(filePart1);
     verify(bucketUseCase, times(1)).uploadFile(filePart2);
@@ -85,9 +89,10 @@ class UploadUseCaseTest {
     Flux<FilePart> files = Flux.just(filePart1, filePart2);
     Context context = Context.of(EMAIL_CONTEXT_KEY, "test@email.com");
 
-    Mono<Void> result = uploadUseCase.uploadFiles(files).contextWrite(context);
+    Mono<UploadQueueMessage> result = uploadUseCase.uploadFiles(files).contextWrite(context);
 
     StepVerifier.create(result)
+      .expectNextMatches(Objects::nonNull)
       .verifyComplete();
 
     verify(bucketUseCase, times(1)).uploadFile(filePart1);
@@ -100,9 +105,10 @@ class UploadUseCaseTest {
     Flux<FilePart> files = Flux.empty();
     Context context = Context.of(EMAIL_CONTEXT_KEY, "test@email.com");
 
-    Mono<Void> result = uploadUseCase.uploadFiles(files).contextWrite(context);
+    Mono<UploadQueueMessage> result = uploadUseCase.uploadFiles(files).contextWrite(context);
 
     StepVerifier.create(result)
+      .expectNextMatches(Objects::nonNull)
       .verifyComplete();
 
     verify(bucketUseCase, times(0)).uploadFile(any());
