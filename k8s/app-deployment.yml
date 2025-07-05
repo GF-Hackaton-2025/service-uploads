@@ -50,3 +50,13 @@ spec:
                 secretKeyRef:
                   name: service-uploads-secrets
                   key: AWS_SESSION_TOKEN
+            - name: EMAIL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: service-uploads-secrets
+                  key: EMAIL_USERNAME
+            - name: EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: service-uploads-secrets
+                  key: EMAIL_PASSWORD
