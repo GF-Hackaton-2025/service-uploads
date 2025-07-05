@@ -35,3 +35,18 @@ spec:
                 secretKeyRef:
                   name: service-uploads-secrets
                   key: MONGO_DB_PASSWORD
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: service-uploads-secrets
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: service-uploads-secrets
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_SESSION_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: service-uploads-secrets
+                  key: AWS_SESSION_TOKEN
