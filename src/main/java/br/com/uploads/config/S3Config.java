@@ -18,7 +18,7 @@ public class S3Config {
   public S3Client s3Client() {
     return S3Client.builder()
       .region(Region.of(awsRegion))
-      .credentialsProvider(DefaultCredentialsProvider.builder().build())
+      .credentialsProvider(DefaultCredentialsProvider.create())
       .build();
   }
 
@@ -26,7 +26,7 @@ public class S3Config {
   public S3AsyncClient s3AsyncClient() {
     return S3AsyncClient.builder()
       .region(Region.of(awsRegion))
-      .credentialsProvider(DefaultCredentialsProvider.builder().build())
+      .credentialsProvider(DefaultCredentialsProvider.create())
       .build();
   }
 
