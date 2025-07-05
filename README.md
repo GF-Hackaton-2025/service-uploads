@@ -1,4 +1,4 @@
-# ☁️ service-uploads
+# ☁️ service-uploads 
 
 O `service-uploads` é um microsserviço em Java 21 com Spring WebFlux responsável por:
 
