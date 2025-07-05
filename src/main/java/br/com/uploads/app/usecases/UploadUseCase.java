@@ -31,7 +31,7 @@ public class UploadUseCase {
   private final FilesRepository filesRepository;
   private final EmailUseCase emailUseCase;
 
-  public Mono<UploadQueueMessage> uploadFiles(Flux<FilePart> files) {
+  public Mono<Void> uploadFiles(Flux<FilePart> files) {
     return Mono.deferContextual(ctx -> {
       var message = UploadQueueMessage.builder()
         .email(ctx.get(EMAIL_CONTEXT_KEY))
@@ -46,7 +46,7 @@ public class UploadUseCase {
         .then(Mono.defer(() -> Mono.just(message)
           .filter(m -> !m.getFiles().isEmpty())
           .flatMap(m -> this.messageQueue.sendMessage(toJson(m)))
-          .thenReturn(message)));
+          .then()));
     });
   }
 

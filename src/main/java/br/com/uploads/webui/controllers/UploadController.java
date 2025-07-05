@@ -1,9 +1,7 @@
 package br.com.uploads.webui.controllers;
 
 import br.com.uploads.app.usecases.UploadUseCase;
-import br.com.uploads.webui.converters.UploadConverter;
 import br.com.uploads.webui.domain.response.ErrorResponse;
-import br.com.uploads.webui.domain.response.UploadFilesResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -52,7 +50,7 @@ public class UploadController {
 
   @PostMapping
   @Operation(summary = "Upload files", description = "Endpoint to upload files")
-  public Mono<UploadFilesResponse> uploadFiles(
+  public Mono<Void> uploadFiles(
     @Parameter(description = EMAIL)
     @RequestHeader(required = false)
     @NotBlank(message = HEADER_REQUIRED) final String email,
@@ -62,11 +60,15 @@ public class UploadController {
 
     return files
       .collectList()
-      .flatMap(fileList -> uploadUseCase.uploadFiles(Flux.fromIterable(fileList))
-        .contextWrite(context -> context.put(EMAIL_CONTEXT_KEY, email))
-        .doOnSuccess(aVoid -> log.info("Upload completed for user: {}", email))
-        .doOnError(error -> log.error("Error during upload for user: {}", email, error)))
-      .map(UploadConverter::toUploadFilesResponse);
+      .flatMap(fileList -> {
+        uploadUseCase.uploadFiles(Flux.fromIterable(fileList))
+          .contextWrite(context -> context.put(EMAIL_CONTEXT_KEY, email))
+          .doOnSuccess(aVoid -> log.info("Upload completed for user: {}", email))
+          .doOnError(error -> log.error("Error during upload for user: {}", email, error))
+          .subscribe();
+
+        return Mono.empty();
+      });
   }
 
 }
