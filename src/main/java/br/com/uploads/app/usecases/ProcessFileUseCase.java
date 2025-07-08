@@ -66,7 +66,7 @@ public class ProcessFileUseCase {
   }
 
   private File updateFileEntity(File file, FileProcessorQueueMessage message) {
-    file.setFileName(message.getZipFileName());
+    file.setZipFileName(message.getZipFileName());
     file.setStatus(message.getStatus());
     return file;
   }
