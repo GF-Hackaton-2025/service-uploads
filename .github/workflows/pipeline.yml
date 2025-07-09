@@ -95,23 +95,6 @@ jobs:
       - name: Update kubeconfig
         run: aws eks update-kubeconfig --name gf-hack-eks-cluster --region us-east-1
 
-      - name: Install Helm
-        uses: azure/setup-helm@v3
-
-      - name: Add Prometheus Helm Repo
-        run: |
-          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-          helm repo update
-
-      - name: Install kube-prometheus-stack
-        run: |
-          helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
-            --namespace monitoring \
-            --create-namespace \
-            --set grafana.adminPassword='gf-hack' \
-            --set grafana.service.type=LoadBalancer \
-            --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false
-
       - name: Apply Kubernetes manifests
         run: |
           kubectl apply -f ./k8s/app-secrets.yml
@@ -120,4 +103,3 @@ jobs:
           kubectl apply -f ./k8s/metrics.yml
           kubectl apply -f ./k8s/app-deployment.yml
           kubectl apply -f ./k8s/app-service.yml
-          kubectl apply -f ./k8s/service-monitor.yml
