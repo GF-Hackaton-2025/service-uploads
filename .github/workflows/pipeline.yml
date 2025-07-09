@@ -120,3 +120,4 @@ jobs:
           kubectl apply -f ./k8s/metrics.yml
           kubectl apply -f ./k8s/app-deployment.yml
           kubectl apply -f ./k8s/app-service.yml
+          kubectl apply -f ./k8s/service-monitor.yml
