@@ -1,4 +1,4 @@
-package br.com.uploads.webui.domain.response;
+package br.com.uploads.webui.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;

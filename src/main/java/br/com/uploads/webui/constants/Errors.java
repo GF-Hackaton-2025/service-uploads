@@ -14,4 +14,8 @@ public class Errors {
   public static final String ERROR_MESSAGE = "Error";
   public static final String VALIDATION_FIELD_ERROR = "Validation field with error";
 
+  // Pagination
+  public static final String PAGE_MIN = "Minimum page number is 1";
+  public static final String LIMIT_MAX = "Maximum limit is 50";
+
 }

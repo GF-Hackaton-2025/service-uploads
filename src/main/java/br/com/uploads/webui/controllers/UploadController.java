@@ -1,7 +1,7 @@
 package br.com.uploads.webui.controllers;
 
 import br.com.uploads.app.usecases.UploadUseCase;
-import br.com.uploads.webui.domain.response.ErrorResponse;
+import br.com.uploads.webui.domain.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -53,10 +53,12 @@ public class UploadController {
   public Mono<Void> uploadFiles(
     @Parameter(description = EMAIL)
     @RequestHeader(required = false)
-    @NotBlank(message = HEADER_REQUIRED) final String email,
+    @NotBlank(message = HEADER_REQUIRED)
+    final String email,
     @Parameter(description = FILES)
     @NotNull(message = FIELD_REQUIRED)
-    @RequestPart(value = "files", required = false) final Flux<FilePart> files) {
+    @RequestPart(value = "files", required = false)
+    final Flux<FilePart> files) {
 
     return files
       .collectList()

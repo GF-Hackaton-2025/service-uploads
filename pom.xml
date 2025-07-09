@@ -23,6 +23,7 @@
             **/config/**,
             **/models/**,
             **/utils/**,
+            **/repositories/**,
             **/exception/handler/**,
             **/ServiceUploadsApplication.java
         </sonar.exclusions>

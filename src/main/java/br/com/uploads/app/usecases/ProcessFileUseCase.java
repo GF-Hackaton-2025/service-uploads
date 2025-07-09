@@ -22,9 +22,9 @@ import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.deleteIfExists;
 import static java.nio.file.Path.of;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class ProcessFileUseCase {
 
   private final BucketUseCase bucketUseCase;

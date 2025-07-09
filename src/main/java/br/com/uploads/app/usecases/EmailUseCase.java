@@ -11,9 +11,9 @@ import reactor.core.publisher.Mono;
 
 import java.nio.file.Path;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class EmailUseCase {
 
   private final JavaMailSender mailSender;
