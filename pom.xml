@@ -23,6 +23,7 @@
             **/config/**,
             **/models/**,
             **/utils/**,
+            **/domain/**,
             **/repositories/**,
             **/exception/handler/**,
             **/ServiceUploadsApplication.java
