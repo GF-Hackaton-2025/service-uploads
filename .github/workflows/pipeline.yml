@@ -94,7 +94,7 @@ jobs:
 
       - name: Update kubeconfig
         run: aws eks update-kubeconfig --name gf-hack-eks-cluster --region us-east-1
-        
+
       - name: Apply Kubernetes manifests
         run: |
           kubectl apply -f ./k8s/app-secrets.yml

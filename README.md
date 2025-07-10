@@ -67,4 +67,4 @@ Além disso, com o uso de Docker, Kubernetes e Terraform, o serviço está prepa
 
 Este serviço compõe uma parte essencial do ecossistema do projeto ```FIAP X - Sistema de Processamento de Vídeos```, garantindo o recebimento seguro dos arquivos de vídeo que serão posteriormente processados por outros microsserviços do sistema.
 
-Caso deseje contribuir ou integrar este serviço com outros sistemas, fique à vontade para abrir issues, pull requests ou propor melhorias.
+Caso deseje contribuir ou integrar este serviço com outros sistemas, fique à vontade para abrir issues, pull requests ou propor melhorias. 
